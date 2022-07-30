@@ -6,6 +6,7 @@ nnoremap <leader>d "_d
 nnoremap x "_x
 
 inoremap jj <Esc>
+nnoremap <silent><c-s> :<c-u>update<cr>
 
 " Increment/decrement
 nnoremap + <C-a>

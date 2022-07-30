@@ -32,7 +32,12 @@ if has("nvim")
  Plug 'prettier/vim-prettier'
  Plug 'neoclide/coc.nvim', {'branch': 'release'}
  Plug 'kabouzeid/nvim-lspinstall'
- Plug 'iamcco/coc-tailwindcss'
+ Plug 'pantharshit00/vim-prisma'
+ 
+ Plug 'SirVer/ultisnips'
+Plug 'mlaursen/vim-react-snippets'
+Plug 'tpope/vim-commentary'
+
 endif
 
 Plug 'groenewege/vim-less', { 'for': 'less' }
