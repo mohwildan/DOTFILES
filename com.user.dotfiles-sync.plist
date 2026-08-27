@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.user.dotfiles-sync</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-c</string>
+        <string>${HOME}/.dotfiles/sync.sh</string>
+    </array>
+    <key>StartInterval</key>
+    <integer>14400</integer> <!-- Run every 4 hours (14,400 seconds) -->
+    <key>StandardOutPath</key>
+    <string>/tmp/dotfiles-sync.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/dotfiles-sync.err</string>
+    <key>RunAtLoad</key>
+    <true/>
+</dict>
+</plist>

@@ -1,0 +1,64 @@
+# ==============================================================================
+# SECRETS, CREDENTIALS & SENSITIVE KEYS (STRICTLY IGNORED)
+# ==============================================================================
+*.local
+*.local.*
+!*.example
+.env
+.env.*
+*.key
+*.pem
+*.secret
+*.token
+*.pfx
+*.p12
+id_rsa*
+id_ed25519*
+known_hosts*
+hosts.yml
+antigravity-accounts.json*
+connections.json
+
+# ==============================================================================
+# OS & SYSTEM METADATA
+# ==============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ==============================================================================
+# EDITOR TEMPORARY FILES & CACHES
+# ==============================================================================
+*.swp
+*.swo
+*~
+*.bak
+*.tmp
+*.log
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ==============================================================================
+# SHELL & APPLICATION HISTORIES / SESSIONS
+# ==============================================================================
+*history*
+*.history
+.zsh_sessions/
+.lesshst
+.viminfo
+
+# ==============================================================================
+# PACKAGES & RUNTIMES
+# ==============================================================================
+node_modules/
+.npm/
+.yarn/
+vendor/
+__pycache__/
+*.pyc

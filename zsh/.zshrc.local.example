@@ -1,0 +1,15 @@
+# ==============================================================================
+# LOCAL CONFIGURATION & SECRETS TEMPLATE (~/.zshrc.local)
+# Copy this file to ~/.zshrc.local and add your real API keys and private tokens.
+# ~/.zshrc.local is NEVER committed to Git.
+# ==============================================================================
+
+# API Keys & Secrets
+# export DEEPSEEK_API_KEY="your-key-here"
+# export LITELLM_MASTER_KEY="your-master-key-here"
+# export OPENAI_API_KEY="your-key-here"
+# export ANTHROPIC_API_KEY="your-key-here"
+
+# Custom Local PATH or Machine-Specific Paths
+# export ANDROID_HOME="/Volumes/DevSSD/Android/sdk"
+# export ANDROID_SDK_ROOT="/Volumes/DevSSD/Android/sdk"

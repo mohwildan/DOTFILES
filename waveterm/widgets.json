@@ -1,0 +1,46 @@
+{
+  "youtube-widget": {
+    "icon": "brands@youtube",
+    "label": "YouTube",
+    "color": "#FF0000",
+    "blockdef": {
+      "meta": {
+        "view": "web",
+        "url": "https://www.youtube.com"
+      }
+    }
+  },
+  "whatsapp-widget": {
+    "icon": "brands@whatsapp",
+    "label": "WhatsApp",
+    "color": "#25D366",
+    "blockdef": {
+      "meta": {
+        "view": "web",
+        "url": "https://web.whatsapp.com"
+      }
+    }
+  },
+  "tiktok-widget": {
+    "icon": "brands@tiktok",
+    "label": "TikTok",
+    "color": "#010101",
+    "blockdef": {
+      "meta": {
+        "view": "web",
+        "url": "https://www.tiktok.com"
+      }
+    }
+  },
+  "reddit-widget": {
+    "icon": "brands@reddit",
+    "label": "Reddit",
+    "color": "#FF4500",
+    "blockdef": {
+      "meta": {
+        "view": "web",
+        "url": "https://www.reddit.com"
+      }
+    }
+  }
+}
