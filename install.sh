@@ -97,6 +97,7 @@ link_file "${DOTFILES_DIR}/hammerspoon/init.lua" "${HOME}/.hammerspoon/init.lua"
 
 # Warp
 link_file "${DOTFILES_DIR}/warp/settings.toml" "${HOME}/.warp/settings.toml"
+link_file "${DOTFILES_DIR}/warp/tab_configs" "${HOME}/.warp/tab_configs"
 
 # Zed Editor
 link_file "${DOTFILES_DIR}/zed/settings.json" "${HOME}/.config/zed/settings.json"
@@ -104,6 +105,12 @@ link_file "${DOTFILES_DIR}/zed/settings.json" "${HOME}/.config/zed/settings.json
 # Waveterm
 link_file "${DOTFILES_DIR}/waveterm/settings.json" "${HOME}/.config/waveterm/settings.json"
 link_file "${DOTFILES_DIR}/waveterm/widgets.json" "${HOME}/.config/waveterm/widgets.json"
+
+# Fish Shell
+link_file "${DOTFILES_DIR}/fish" "${HOME}/.config/fish"
+
+# Custom Scripts
+link_file "${DOTFILES_DIR}/scripts" "${HOME}/scripts"
 
 # ------------------------------------------------------------------------------
 # 2. PRIVATE / LOCAL SECRETS SETUP
