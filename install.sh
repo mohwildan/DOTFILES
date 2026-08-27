@@ -144,4 +144,11 @@ if [ -d "$BACKUP_DIR" ]; then
     echo -e "\n${YELLOW}📦 Any replaced files were safely preserved in:${NC} ${BACKUP_DIR}"
 fi
 
+# Ensure dotsync command is in ~/.local/bin
+mkdir -p "${HOME}/.local/bin"
+if [ "$DRY_RUN" = false ]; then
+    ln -sfn "${DOTFILES_DIR}/sync.sh" "${HOME}/.local/bin/dotsync"
+fi
+echo -e "  ${GREEN}✓ Linked CLI:${NC} ${HOME}/.local/bin/dotsync -> ${DOTFILES_DIR}/sync.sh"
+
 echo -e "\n${GREEN}${BOLD}🎉 Installation Complete! Run 'dotsync' anytime to auto-sync your configs to Git.${NC}"
