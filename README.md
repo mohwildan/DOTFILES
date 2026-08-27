@@ -27,12 +27,18 @@ Clean, modular, secret-safe dotfiles with real-time symlink synchronization and 
 ├── hammerspoon/
 │   └── init.lua               # Hammerspoon macOS automation scripts
 ├── warp/
-│   └── settings.toml          # Warp terminal settings, themes, and fonts
+│   ├── settings.toml          # Warp terminal settings, themes, and fonts
+│   └── tab_configs/           # Warp startup tab configurations
 ├── zed/
 │   └── settings.json          # Zed editor configuration
-└── waveterm/
-    ├── settings.json          # Wave terminal configuration
-    └── widgets.json           # Wave widgets
+├── waveterm/
+│   ├── settings.json          # Wave terminal configuration
+│   └── widgets.json           # Wave widgets
+├── fish/
+│   └── conf.d/                # Fish shell integration configs
+└── scripts/
+    ├── ipa-control.sh         # Custom shell control scripts
+    └── raycast/               # Raycast custom script commands
 ```
 
 ---
