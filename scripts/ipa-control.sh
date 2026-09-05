@@ -64,6 +64,8 @@ tell application "Google Chrome"
     
     -- Perform requested action
     if "$ACTION" is "save-caption" or "$ACTION" is "save" or "$ACTION" is "caption" then
+        activate
+        tell targetWindow to set index to 1
         execute targetTab javascript "(function() { window.dispatchEvent(new CustomEvent('ipa-quick-save-caption')); const fs = document.querySelectorAll('iframe'); for (let i = 0; i < fs.length; i++) { try { fs[i].contentWindow.postMessage({ type: 'IPA_VIDEO_ACTION', action: 'save-caption' }, '*'); } catch(e) {} } })();"
         return "Opened Caption Picker"
         
