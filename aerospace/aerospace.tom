@@ -36,7 +36,7 @@ default-root-container-orientation = 'auto'
 # See https://nikitabobko.github.io/AeroSpace/guide#on-focus-changed-callbacks
 # See https://nikitabobko.github.io/AeroSpace/commands#move-mouse
 # Fallback value (if you omit the key): on-focused-monitor-changed = []
-on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+on-focused-monitor-changed = []
 
 # You can effectively turn off macOS "Hide application" (cmd-h) feature by toggling this flag
 # Useful if you don't use this macOS feature, but accidentally hit cmd-h or cmd-alt-h key
@@ -114,19 +114,20 @@ on-mode-changed = []
     alt-slash = 'layout tiles horizontal vertical'
     alt-comma = 'layout tiles accordion'
     alt-backtick = 'focus-back-and-forth'
-    alt-shift-space = 'layout floating tiling'
+    alt-i = 'exec-and-forget /Users/mac/scripts/show-space-hud.sh'
+    alt-ctrl-p = 'exec-and-forget ~/.aerospace-summon-app.sh'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#focus
-    alt-h = 'focus left'
-    alt-j = 'focus down'
-    alt-k = 'focus up'
-    alt-l = 'focus right'
+    alt-h = 'focus --boundaries all-monitors-outer-frame left'
+    alt-j = 'focus --boundaries all-monitors-outer-frame down'
+    alt-k = 'focus --boundaries all-monitors-outer-frame up'
+    alt-l = 'focus --boundaries all-monitors-outer-frame right'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move
-    alt-shift-h = 'move left'
-    alt-shift-j = 'move down'
-    alt-shift-k = 'move up'
-    alt-shift-l = 'move right'
+    alt-shift-h = 'move --boundaries all-monitors-outer-frame left'
+    alt-shift-j = 'move --boundaries all-monitors-outer-frame down'
+    alt-shift-k = 'move --boundaries all-monitors-outer-frame up'
+    alt-shift-l = 'move --boundaries all-monitors-outer-frame right'
 
     #fullscreen
 
