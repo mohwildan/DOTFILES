@@ -120,16 +120,21 @@ on-mode-changed = []
     alt-ctrl-p = 'exec-and-forget ~/.aerospace-summon-app.sh'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#focus
-    alt-h = 'focus --boundaries all-monitors-outer-frame left'
-    alt-j = 'focus --boundaries all-monitors-outer-frame down'
-    alt-k = 'focus --boundaries all-monitors-outer-frame up'
-    alt-l = 'focus --boundaries all-monitors-outer-frame right'
+    alt-h = ['focus --boundaries all-monitors-outer-frame left', 'move-mouse window-lazy-center']
+    alt-j = ['focus --boundaries all-monitors-outer-frame down', 'move-mouse window-lazy-center']
+    alt-k = ['focus --boundaries all-monitors-outer-frame up', 'move-mouse window-lazy-center']
+    alt-l = ['focus --boundaries all-monitors-outer-frame right', 'move-mouse window-lazy-center']
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move
-    alt-shift-h = 'move --boundaries all-monitors-outer-frame left'
-    alt-shift-j = 'move --boundaries all-monitors-outer-frame down'
-    alt-shift-k = 'move --boundaries all-monitors-outer-frame up'
-    alt-shift-l = 'move --boundaries all-monitors-outer-frame right'
+    alt-shift-h = ['move --boundaries all-monitors-outer-frame left', 'move-mouse window-lazy-center']
+    alt-shift-j = ['move --boundaries all-monitors-outer-frame down', 'move-mouse window-lazy-center']
+    alt-shift-k = ['move --boundaries all-monitors-outer-frame up', 'move-mouse window-lazy-center']
+    alt-shift-l = ['move --boundaries all-monitors-outer-frame right', 'move-mouse window-lazy-center']
+
+    alt-ctrl-h = ['move --boundaries all-monitors-outer-frame left', 'move-mouse window-lazy-center']
+    alt-ctrl-j = ['move --boundaries all-monitors-outer-frame down', 'move-mouse window-lazy-center']
+    alt-ctrl-k = ['move --boundaries all-monitors-outer-frame up', 'move-mouse window-lazy-center']
+    alt-ctrl-l = ['move --boundaries all-monitors-outer-frame right', 'move-mouse window-lazy-center']
 
     #fullscreen
 
@@ -192,12 +197,12 @@ on-mode-changed = []
     alt-tab = 'workspace-back-and-forth'
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
     alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
-    alt-rightSquareBracket = ['focus-monitor --wrap-around next', 'move-mouse window-lazy-center']
-    alt-leftSquareBracket = ['focus-monitor --wrap-around prev', 'move-mouse window-lazy-center']
-    alt-shift-rightSquareBracket = ['move-node-to-monitor --wrap-around next', 'move-mouse window-lazy-center']
-    alt-shift-leftSquareBracket = ['move-node-to-monitor --wrap-around prev', 'move-mouse window-lazy-center']
-    ctrl-shift-rightSquareBracket = ['move-node-to-monitor --wrap-around next', 'move-mouse window-lazy-center']
-    ctrl-shift-leftSquareBracket = ['move-node-to-monitor --wrap-around prev', 'move-mouse window-lazy-center']
+    alt-rightSquareBracket = ['focus-monitor --wrap-around next', 'move-mouse monitor-lazy-center']
+    alt-leftSquareBracket = ['focus-monitor --wrap-around prev', 'move-mouse monitor-lazy-center']
+    alt-shift-rightSquareBracket = ['move-node-to-monitor --wrap-around next', 'move-mouse monitor-lazy-center']
+    alt-shift-leftSquareBracket = ['move-node-to-monitor --wrap-around prev', 'move-mouse monitor-lazy-center']
+    ctrl-shift-rightSquareBracket = ['move-node-to-monitor --wrap-around next', 'move-mouse monitor-lazy-center']
+    ctrl-shift-leftSquareBracket = ['move-node-to-monitor --wrap-around prev', 'move-mouse monitor-lazy-center']
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#mode
     alt-shift-semicolon = 'mode service'
