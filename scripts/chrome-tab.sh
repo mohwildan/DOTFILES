@@ -33,7 +33,17 @@ tell application "Google Chrome"
     set currentIdx to active tab index of frontWin
     set targetInput to "$TARGET"
     
-    if targetInput is "next" then
+    if targetInput is "move-next" or targetInput is "move-right" then
+        if currentIdx < totalTabs then
+            move tab currentIdx to after tab (currentIdx + 1)
+        end if
+        return
+    else if targetInput is "move-prev" or targetInput is "move-left" then
+        if currentIdx > 1 then
+            move tab currentIdx to before tab (currentIdx - 1)
+        end if
+        return
+    else if targetInput is "next" then
         set targetIdx to currentIdx + 1
         if targetIdx > totalTabs then set targetIdx to 1
     else if targetInput is "prev" or targetInput is "previous" then

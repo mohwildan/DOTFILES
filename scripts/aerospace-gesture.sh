@@ -9,12 +9,40 @@ export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 ACTION="${1:-next-workspace}"
 
 case "$ACTION" in
-    # --- WORKSPACE NAVIGATION ---
+    # --- WORKSPACE & CHROME TAB NAVIGATION ---
     next-workspace|workspace-next|next-space)
+        # If Google Chrome is active, swipe left switches to next tab
+        FOCUSED_APP=$(aerospace list-windows --focused --format '%{app-bundle-id}' 2>/dev/null)
+        if [ "$FOCUSED_APP" = "com.google.Chrome" ]; then
+            /Users/mac/scripts/chrome-tab.sh next
+            exit 0
+        fi
+
+        # Otherwise switch AeroSpace active workspace
         aerospace list-workspaces --monitor all --empty no 2>/dev/null | aerospace workspace --wrap-around --stdin next 2>/dev/null
         ;;
     prev-workspace|workspace-prev|prev-space)
+        # If Google Chrome is active, swipe right switches to prev tab
+        FOCUSED_APP=$(aerospace list-windows --focused --format '%{app-bundle-id}' 2>/dev/null)
+        if [ "$FOCUSED_APP" = "com.google.Chrome" ]; then
+            /Users/mac/scripts/chrome-tab.sh prev
+            exit 0
+        fi
+
+        # Otherwise switch AeroSpace active workspace
         aerospace list-workspaces --monitor all --empty no 2>/dev/null | aerospace workspace --wrap-around --stdin prev 2>/dev/null
+        ;;
+    chrome-next-tab|chrome-tab-next)
+        /Users/mac/scripts/chrome-tab.sh next -b
+        ;;
+    chrome-prev-tab|chrome-tab-prev)
+        /Users/mac/scripts/chrome-tab.sh prev -b
+        ;;
+    chrome-move-tab-left)
+        /Users/mac/scripts/chrome-tab.sh move-left
+        ;;
+    chrome-move-tab-right)
+        /Users/mac/scripts/chrome-tab.sh move-right
         ;;
     space-back-and-forth|flip-workspace)
         aerospace workspace-back-and-forth 2>/dev/null
