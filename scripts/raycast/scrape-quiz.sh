@@ -9,4 +9,5 @@
 # @raycast.icon 🌐
 # @raycast.packageName Sibermu Quiz
 
-/Users/mac/scripts/scrape-quiz.sh
+nohup /Users/mac/scripts/scrape-quiz.sh > /dev/null 2>&1 &
+exit 0

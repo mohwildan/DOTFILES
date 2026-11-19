@@ -34,5 +34,6 @@ EOF
 fi
 
 # Run silently
+cd "/Users/mac/project/sibermu-lms-scraping" || exit 1
 "$PYTHON_BIN" "$PYTHON_SCRIPT" "$TARGET_QUERY" > /dev/null 2>&1
 exit 0

@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Steno Visual Companion</title>
+  <style>
+    :root {
+      --bg: #12141a;
+      --card-bg: #1a1e28;
+      --card-border: #282f40;
+      --text: #f0f3f8;
+      --muted: #8b95a8;
+      --accent-blue: #38bdf8;
+      --accent-green: #34d399;
+      --accent-orange: #fb923c;
+      --accent-purple: #c084fc;
+      --accent-pink: #f472b6;
+      --key-bg: #212738;
+      --key-border: #333d54;
+      --key-active: #38bdf8;
+      --key-suggest: #fbbf24;
+      --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      --mono: "SF Mono", "Fira Code", Menlo, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* Top Bar */
+    header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--card-border);
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--accent-blue);
+    }
+    .brand span { color: var(--muted); font-size: 11px; font-weight: normal; margin-left: 4px; }
+
+    .search-box {
+      flex: 1;
+      max-width: 320px;
+      position: relative;
+    }
+    .search-box input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 6px 12px 6px 30px;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .search-box input:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    }
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      opacity: 0.5;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--accent-green);
+      background: rgba(52, 211, 153, 0.1);
+      padding: 4px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-green);
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Left Pane: Keyboard Visualizer */
+    .keyboard-pane {
+      flex: 1.35;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 16px;
+      border-right: 1px solid var(--card-border);
+      overflow-y: auto;
+    }
+
+    /* HUD Output Card */
+    .hud-card {
+      width: 100%;
+      max-width: 600px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 52px;
+    }
+    .hud-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .hud-label {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .hud-buffer {
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent-blue);
+      letter-spacing: 1px;
+    }
+    .hud-right {
+      text-align: right;
+    }
+    .hud-output {
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent-green);
+    }
+
+    /* Keyboard Layout */
+    .keyboard-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+      width: 100%;
+      max-width: 620px;
+      background: rgba(26, 30, 40, 0.4);
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--card-border);
+    }
+
+    .key-row {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .key-split {
+      width: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 11px;
+      opacity: 0.3;
+    }
+
+    .key {
+      width: 44px;
+      height: 48px;
+      background: var(--key-bg);
+      border: 1px solid var(--key-border);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.1s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 3px 0 #131722;
+    }
+
+    .key .steno {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      font-family: var(--mono);
+    }
+    .key .qwerty {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-family: var(--mono);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    /* Finger Color Accents */
+    .zone-left { border-bottom: 2px solid var(--accent-blue); }
+    .zone-center { border-bottom: 2px solid var(--accent-purple); }
+    .zone-right { border-bottom: 2px solid var(--accent-green); }
+    .zone-thumb { border-bottom: 2px solid var(--accent-orange); }
+
+    /* Key States */
+    .key.active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #131722;
+      background: #0284c7 !important;
+      border-color: #38bdf8 !important;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.6) !important;
+    }
+    .key.active .steno, .key.active .qwerty { color: #ffffff !important; }
+
+    .key.suggested {
+      background: rgba(251, 191, 36, 0.15) !important;
+      border-color: #fbbf24 !important;
+      box-shadow: 0 0 12px rgba(251, 191, 36, 0.3) !important;
+      animation: pulse 1.5s infinite alternate;
+    }
+    .key.suggested .steno { color: #fde047; }
+    .key.suggested .qwerty { color: #fef08a; background: rgba(251, 191, 36, 0.25); }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.04); }
+    }
+
+    /* Space Key (Arpeggiate Commit) */
+    .key-space {
+      width: 220px;
+      height: 38px;
+      margin-top: 4px;
+      border-bottom: 2px solid var(--accent-orange);
+      flex-direction: row;
+      gap: 10px;
+    }
+    .key-space .steno { font-size: 11px; font-weight: 600; color: var(--muted); }
+    .key-space .qwerty { font-size: 10px; color: var(--accent-orange); }
+
+    /* Legend / Hint */
+    .hint-bar {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+      padding: 0 4px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 5px; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* Right Pane: Word Lists & Practice Deck */
+    .deck-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      overflow: hidden;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--card-border);
+      background: rgba(18, 20, 26, 0.5);
+    }
+    .tab {
+      flex: 1;
+      padding: 10px 8px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active {
+      color: var(--accent-blue);
+      border-bottom-color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    /* Word List Scroll Area */
+    .word-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .word-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 12px;
+      border-radius: 8px;
+      background: var(--bg);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .word-item:hover {
+      background: rgba(56, 189, 248, 0.08);
+      border-color: rgba(56, 189, 248, 0.3);
+      transform: translateX(2px);
+    }
+    .word-item.selected {
+      background: rgba(251, 191, 36, 0.12);
+      border-color: #fbbf24;
+    }
+
+    .item-word {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .item-chord {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-green);
+      background: rgba(52, 211, 153, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .item-qwerty {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      margin-left: 8px;
+    }
+
+    /* Selected Word Detail Box */
+    .detail-box {
+      border-top: 1px solid var(--card-border);
+      padding: 12px 16px;
+      background: rgba(18, 20, 26, 0.8);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .detail-title {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .detail-step {
+      font-size: 13px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge-key {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: #000;
+      background: #fbbf24;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation & Search -->
+  <header>
+    <div class="brand">
+      ⌨️ Steno Companion <span>Mac QWERTY HUD</span>
+    </div>
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search word or chord (e.g. apple, S-G)..." autofocus>
+    </div>
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      Live Mac Key Listener
+    </div>
+  </header>
+
+  <main>
+    <!-- Left Pane: Keyboard Visualizer -->
+    <section class="keyboard-pane">
+      <!-- HUD Stroke & Output Display -->
+      <div class="hud-card">
+        <div class="hud-left">
+          <span class="hud-label">Stroke Buffer (Roll keys, then tap Space)</span>
+          <span class="hud-buffer" id="hudBuffer">—</span>
+        </div>
+        <div class="hud-right">
+          <span class="hud-label">Output Word</span>
+          <span class="hud-output" id="hudOutput">—</span>
+        </div>
+      </div>
+
+      <!-- Keyboard Layout -->
+      <div class="keyboard-container" id="keyboard">
+        <!-- Number Bar -->
+        <div class="key-row">
+          <div class="key zone-left" data-key="1" data-steno="#" style="width:36px; height:36px;"><span class="steno">#</span><span class="qwerty">1</span></div>
+          <div class="key zone-left" data-key="2" data-steno="#" style="width:36px; height:36px;"><span class="steno">#</span><span class="qwerty">2</span></div>
+          <div class="key zone-left" data-key="3" data-steno="#" style="width:36px; height:36px;"><span class="steno">#</span><span class="qwerty">3</span></div>
+          <div class="key zone-left" data-key="4" data-steno="#" style="width:36px; height:36px;"><span class="steno">#</span><span class="qwerty">4</span></div>
+          <div class="key zone-center" data-key="5" data-steno="#" style="width:36px; height:36px;"><span class="steno">#</span><span class="qwerty">5</span></div>
+          <div class="key-split">|</div>
+          <div class="key zone-center" data-key="6" data-steno="#" style="width:36px; height:36px;"><span class="steno">#</span><span class="qwerty">6</span></div>
+          <div class="key zone-right" data-key="7" data-steno="#" style="width:36px; height:36px;"><span class="steno">#</span><span class="qwerty">7</span></div>
+          <div class="key zone-right" data-key="8" data-steno="#" style="width:36px; height:36px;"><span class="steno">#</span><span class="qwerty">8</span></div>
+          <div class="key zone-right" data-key="9" data-steno="#" style="width:36px; height:36px;"><span class="steno">#</span><span class="qwerty">9</span></div>
+          <div class="key zone-right" data-key="0" data-steno="#" style="width:36px; height:36px;"><span class="steno">#</span><span class="qwerty">0</span></div>
+          <div class="key zone-right" data-key="-" data-steno="#" style="width:36px; height:36px;"><span class="steno">#</span><span class="qwerty">-</span></div>
+        </div>
+
+        <!-- Upper Row -->
+        <div class="key-row">
+          <div class="key zone-left" data-key="q" data-steno="S-"><span class="steno">S</span><span class="qwerty">Q</span></div>
+          <div class="key zone-left" data-key="w" data-steno="T-"><span class="steno">T</span><span class="qwerty">W</span></div>
+          <div class="key zone-left" data-key="e" data-steno="P-"><span class="steno">P</span><span class="qwerty">E</span></div>
+          <div class="key zone-left" data-key="r" data-steno="H-"><span class="steno">H</span><span class="qwerty">R</span></div>
+          <div class="key zone-center" data-key="t" data-steno="*"><span class="steno">*</span><span class="qwerty">T</span></div>
+          <div class="key-split">|</div>
+          <div class="key zone-center" data-key="y" data-steno="*"><span class="steno">*</span><span class="qwerty">Y</span></div>
+          <div class="key zone-right" data-key="u" data-steno="-F"><span class="steno">F</span><span class="qwerty">U</span></div>
+          <div class="key zone-right" data-key="i" data-steno="-P"><span class="steno">P</span><span class="qwerty">I</span></div>
+          <div class="key zone-right" data-key="o" data-steno="-L"><span class="steno">L</span><span class="qwerty">O</span></div>
+          <div class="key zone-right" data-key="p" data-steno="-T"><span class="steno">T</span><span class="qwerty">P</span></div>
+          <div class="key zone-right" data-key="[" data-steno="-D"><span class="steno">D</span><span class="qwerty">[</span></div>
+        </div>
+
+        <!-- Lower Row -->
+        <div class="key-row">
+          <div class="key zone-left" data-key="a" data-steno="S-"><span class="steno">S</span><span class="qwerty">A</span></div>
+          <div class="key zone-left" data-key="s" data-steno="K-"><span class="steno">K</span><span class="qwerty">S</span></div>
+          <div class="key zone-left" data-key="d" data-steno="W-"><span class="steno">W</span><span class="qwerty">D</span></div>
+          <div class="key zone-left" data-key="f" data-steno="R-"><span class="steno">R</span><span class="qwerty">F</span></div>
+          <div class="key zone-center" data-key="g" data-steno="*"><span class="steno">*</span><span class="qwerty">G</span></div>
+          <div class="key-split">|</div>
+          <div class="key zone-center" data-key="h" data-steno="*"><span class="steno">*</span><span class="qwerty">H</span></div>
+          <div class="key zone-right" data-key="j" data-steno="-R"><span class="steno">R</span><span class="qwerty">J</span></div>
+          <div class="key zone-right" data-key="k" data-steno="-B"><span class="steno">B</span><span class="qwerty">K</span></div>
+          <div class="key zone-right" data-key="l" data-steno="-G"><span class="steno">G</span><span class="qwerty">L</span></div>
+          <div class="key zone-right" data-key=";" data-steno="-S"><span class="steno">S</span><span class="qwerty">;</span></div>
+          <div class="key zone-right" data-key="'" data-steno="-Z"><span class="steno">Z</span><span class="qwerty">'</span></div>
+        </div>
+
+        <!-- Thumbs Row -->
+        <div class="key-row" style="margin-top: 4px;">
+          <div style="width: 140px;"></div>
+          <div class="key zone-thumb" data-key="c" data-steno="A-"><span class="steno">A</span><span class="qwerty">C</span></div>
+          <div class="key zone-thumb" data-key="v" data-steno="O-"><span class="steno">O</span><span class="qwerty">V</span></div>
+          <div class="key-split">|</div>
+          <div class="key zone-thumb" data-key="n" data-steno="-E"><span class="steno">E</span><span class="qwerty">N</span></div>
+          <div class="key zone-thumb" data-key="m" data-steno="-U"><span class="steno">U</span><span class="qwerty">M</span></div>
+          <div style="width: 140px;"></div>
+        </div>
+
+        <!-- Spacebar (Commit) -->
+        <div class="key key-space" data-key=" ">
+          <span class="steno">Tap to Commit Stroke</span>
+          <span class="qwerty">SPACE</span>
+        </div>
+      </div>
+
+      <!-- Color Legend -->
+      <div class="hint-bar">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent-blue);"></div> Left Hand</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent-orange);"></div> Thumbs (Vowels)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent-purple);"></div> Asterisk</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent-green);"></div> Right Hand</div>
+      </div>
+    </section>
+
+    <!-- Right Pane: Word Lists & Practice Deck -->
+    <aside class="deck-pane">
+      <div class="tabs">
+        <div class="tab active" data-deck="top100">Top 100</div>
+        <div class="tab" data-deck="dev">Dev Briefs</div>
+        <div class="tab" data-deck="nav">Navigation</div>
+        <div class="tab" data-deck="punct">Punctuation</div>
+      </div>
+
+      <div class="word-list" id="wordList"></div>
+
+      <div class="detail-box" id="detailBox">
+        <span class="detail-title">How to stroke:</span>
+        <div class="detail-step" id="detailStep">Select any word from the list or search above</div>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    // --- STENO DECKS DATA ---
+    const DECKS = {
+      top100: [
+        { word: "the", chord: "T", qwerty: "W" },
+        { word: "of", chord: "-F", qwerty: "U" },
+        { word: "and", chord: "SKP", qwerty: "Q+S+E" },
+        { word: "a", chord: "AEU", qwerty: "C+N+M" },
+        { word: "to", chord: "TO", qwerty: "W+V" },
+        { word: "in", chord: "TPH", qwerty: "W+E+R" },
+        { word: "is", chord: "S", qwerty: "Q" },
+        { word: "you", chord: "U", qwerty: "M" },
+        { word: "that", chord: "THA", qwerty: "W+R+C" },
+        { word: "it", chord: "T", qwerty: "P" },
+        { word: "he", chord: "E", qwerty: "N" },
+        { word: "was", chord: "WA", qwerty: "D+C" },
+        { word: "for", chord: "TP-R", qwerty: "W+E+J" },
+        { word: "on", chord: "OPB", qwerty: "V+P+K" },
+        { word: "are", chord: "R", qwerty: "F" },
+        { word: "as", chord: "AZ", qwerty: "C+'" },
+        { word: "with", chord: "W", qwerty: "D" },
+        { word: "his", chord: "HEUS", qwerty: "R+I+N+M+;" },
+        { word: "they", chord: "THE", qwerty: "W+R+N" },
+        { word: "I", chord: "EU", qwerty: "N+M" },
+        { word: "at", chord: "AT", qwerty: "C+P" },
+        { word: "be", chord: "-B", qwerty: "K" },
+        { word: "this", chord: "TH", qwerty: "W+R" },
+        { word: "have", chord: "SR", qwerty: "Q+F" },
+        { word: "from", chord: "TPR", qwerty: "W+E+F" },
+        { word: "or", chord: "OR", qwerty: "V+J" },
+        { word: "one", chord: "WUPB", qwerty: "D+M+P+K" },
+        { word: "had", chord: "H", qwerty: "R" },
+        { word: "by", chord: "PWEU", qwerty: "E+D+N+M" },
+        { word: "word", chord: "WORD", qwerty: "D+V+J+[" },
+        { word: "but", chord: "PWUT", qwerty: "E+D+M+P" },
+        { word: "not", chord: "TPHOT", qwerty: "W+E+R+V+P" },
+        { word: "what", chord: "WHA", qwerty: "D+R+C" },
+        { word: "all", chord: "AUL", qwerty: "C+M+O" },
+        { word: "were", chord: "WR", qwerty: "D+F" },
+        { word: "we", chord: "WE", qwerty: "D+N" },
+        { word: "when", chord: "WHEPB", qwerty: "D+R+N+P+K" },
+        { word: "your", chord: "KWROUR", qwerty: "S+D+F+V+M+J" },
+        { word: "can", chord: "K", qwerty: "S" },
+        { word: "said", chord: "SED", qwerty: "Q+N+[" },
+        { word: "there", chord: "THR", qwerty: "W+R+F" },
+        { word: "use", chord: "AOUZ", qwerty: "C+V+M+'" },
+        { word: "an", chord: "APB", qwerty: "C+P+K" },
+        { word: "each", chord: "AOEFP", qwerty: "C+V+N+U+I" },
+        { word: "which", chord: "WEUFP", qwerty: "D+N+M+U+I" },
+        { word: "she", chord: "SHE", qwerty: "Q+R+N" },
+        { word: "do", chord: "TKO", qwerty: "W+S+V" },
+        { word: "how", chord: "HOU", qwerty: "R+V+M" },
+        { word: "their", chord: "THAEUR", qwerty: "W+R+C+N+M+J" },
+        { word: "if", chord: "TP", qwerty: "W+E" },
+        { word: "will", chord: "HR", qwerty: "R+F" },
+        { word: "up", chord: "UP", qwerty: "M+I" },
+        { word: "other", chord: "OER", qwerty: "V+N+J" },
+        { word: "about", chord: "PW", qwerty: "E+D" },
+        { word: "out", chord: "OUT", qwerty: "V+M+P" },
+        { word: "many", chord: "PHAEPB", qwerty: "E+R+C+N+P+K" },
+        { word: "then", chord: "THEPB", qwerty: "W+R+N+P+K" },
+        { word: "them", chord: "THEPL", qwerty: "W+R+N+I+O" },
+        { word: "these", chord: "THAOES", qwerty: "W+R+C+V+N+;" },
+        { word: "so", chord: "SO", qwerty: "Q+V" },
+        { word: "some", chord: "SOPL", qwerty: "Q+V+I+O" },
+        { word: "something", chord: "S-G", qwerty: "Q + L" }
+      ],
+      dev: [
+        { word: "git", chord: "TKPW*EUT", qwerty: "W+S+E+D+T+N+M+P" },
+        { word: "return", chord: "RURPB", qwerty: "F+M+J+P+K" },
+        { word: "function", chord: "TP-PBGS", qwerty: "W+E+P+K+L+;" },
+        { word: "true", chord: "TRAOU", qwerty: "W+F+C+V+M" },
+        { word: "false", chord: "TPALS", qwerty: "W+E+C+O+;" },
+        { word: "const", chord: "KOPB/ST", qwerty: "S+V+P+K / Q+W" },
+        { word: "let", chord: "HRET", qwerty: "R+F+N+P" },
+        { word: "var", chord: "SRAR", qwerty: "Q+F+C+J" },
+        { word: "import", chord: "KPW-PT", qwerty: "S+E+D+I+P" },
+        { word: "export", chord: "SKP-PT", qwerty: "Q+S+E+I+P" },
+        { word: "class", chord: "KHLAES", qwerty: "S+R+O+C+N+;" },
+        { word: "error", chord: "ROER", qwerty: "F+V+N+J" },
+        { word: "test", chord: "TEFT", qwerty: "W+N+U+P" },
+        { word: "log", chord: "HROUG", qwerty: "R+F+V+M+L" },
+        { word: "null", chord: "TPHUL", qwerty: "W+E+R+M+O" },
+        { word: "loop", chord: "HRAOP", qwerty: "R+F+C+V+I" },
+        { word: "break", chord: "PWRAEUBG", qwerty: "E+D+F+C+N+M+K+L" },
+        { word: "switch", chord: "SWEUFP", qwerty: "Q+D+N+M+U+I" },
+        { word: "case", chord: "KAEUS", qwerty: "S+C+N+M+;" },
+        { word: "async", chord: "A/SEUPBG", qwerty: "C / Q+N+M+P+K+L" },
+        { word: "await", chord: "A/WAET", qwerty: "C / D+C+N+P" }
+      ],
+      nav: [
+        { word: "Return / Enter", chord: "R*R", qwerty: "F + T + J" },
+        { word: "Backspace", chord: "PW*FP", qwerty: "E + D + T + U + I" },
+        { word: "Delete", chord: "TK*EL", qwerty: "W + S + T + N + O" },
+        { word: "Escape", chord: "TPEFBG", qwerty: "W + E + U + K + L" },
+        { word: "Tab", chord: "TA*B", qwerty: "W + C + T + K" },
+        { word: "Left Arrow", chord: "STPH-R", qwerty: "Q + W + E + R + J" },
+        { word: "Right Arrow", chord: "STPH-G", qwerty: "Q + W + E + R + L" },
+        { word: "Up Arrow", chord: "STPH-P", qwerty: "Q + W + E + R + I" },
+        { word: "Down Arrow", chord: "STPH-B", qwerty: "Q + W + E + R + K" }
+      ],
+      punct: [
+        { word: "Period ( . )", chord: "TP-PL", qwerty: "W + E + I + O" },
+        { word: "Comma ( , )", chord: "KW-BG", qwerty: "S + D + K + L" },
+        { word: "Question ( ? )", chord: "H-F", qwerty: "R + U" },
+        { word: "Exclamation ( ! )", chord: "SKHR-PL", qwerty: "Q + S + R + F + I + O" },
+        { word: "Colon ( : )", chord: "KL-PB", qwerty: "S + O + P + K" },
+        { word: "Semicolon ( ; )", chord: "S-P", qwerty: "Q + I" },
+        { word: "Double Quote ( \" )", chord: "KW-GS", qwerty: "S + D + L + ;" },
+        { word: "Single Quote ( ' )", chord: "AE", qwerty: "C + N" }
+      ]
+    };
+
+    // Steno Chord Parser
+    function parseChordKeys(chord) {
+      const keys = [];
+      const s = chord.split('/')[0];
+      const hasHyphen = s.includes('-');
+      const parts = hasHyphen ? s.split('-') : [s];
+      const left = parts[0];
+
+      if (/[0-9]/.test(left)) keys.push('#');
+      if (left.includes('S')) keys.push('S-');
+      if (left.includes('T') && !left.startsWith('TH')) keys.push('T-');
+      if (left.includes('K')) keys.push('K-');
+      if (left.includes('P')) keys.push('P-');
+      if (left.includes('W')) keys.push('W-');
+      if (left.includes('H')) keys.push('H-');
+      if (left.includes('R') && !hasHyphen && !/[AOU*E]/.test(left)) keys.push('R-');
+      if (left.includes('A')) keys.push('A-');
+      if (left.includes('O')) keys.push('O-');
+      if (s.includes('*')) keys.push('*');
+      if (s.includes('E')) keys.push('-E');
+      if (s.includes('U')) keys.push('-U');
+
+      const right = hasHyphen ? parts[1] : (/[AOU*E]/.test(s) ? s.split(/[AOU*E]/).pop() : '');
+      if (right.includes('F')) keys.push('-F');
+      if (right.includes('R')) keys.push('-R');
+      if (right.includes('P')) keys.push('-P');
+      if (right.includes('B')) keys.push('-B');
+      if (right.includes('L')) keys.push('-L');
+      if (right.includes('G')) keys.push('-G');
+      if (right.includes('T')) keys.push('-T');
+      if (right.includes('S')) keys.push('-S');
+      if (right.includes('D')) keys.push('-D');
+      if (right.includes('Z')) keys.push('-Z');
+
+      return keys;
+    }
+
+    // UI Elements
+    const hudBuffer = document.getElementById('hudBuffer');
+    const hudOutput = document.getElementById('hudOutput');
+    const wordList = document.getElementById('wordList');
+    const searchInput = document.getElementById('searchInput');
+    const detailStep = document.getElementById('detailStep');
+    const keyElements = document.querySelectorAll('.key');
+
+    let currentDeck = 'top100';
+    let pressedKeys = new Set();
+    let chordBuffer = [];
+
+    // Render Deck List
+    function renderDeck(deckName, filter = '') {
+      currentDeck = deckName;
+      wordList.innerHTML = '';
+      const items = DECKS[deckName] || [];
+      const filtered = items.filter(i => 
+        i.word.toLowerCase().includes(filter.toLowerCase()) || 
+        i.chord.toLowerCase().includes(filter.toLowerCase())
+      );
+
+      filtered.forEach((item, index) => {
+        const el = document.createElement('div');
+        el.className = 'word-item';
+        el.innerHTML = `
+          <div style="display:flex; align-items:center;">
+            <span class="item-word">${item.word}</span>
+            <span class="item-qwerty">${item.qwerty}</span>
+          </div>
+          <span class="item-chord">${item.chord}</span>
+        `;
+        el.addEventListener('click', () => selectWord(item, el));
+        wordList.appendChild(el);
+
+        // Auto select first match if searching
+        if (filter && index === 0) {
+          selectWord(item, el);
+        }
+      });
+    }
+
+    // Select Word & Highlight Keys
+    function selectWord(item, element) {
+      document.querySelectorAll('.word-item').forEach(el => el.classList.remove('selected'));
+      if (element) element.classList.add('selected');
+
+      // Clear old suggested highlights
+      keyElements.forEach(k => k.classList.remove('suggested'));
+
+      // Highlight target keys
+      const neededKeys = parseChordKeys(item.chord);
+      keyElements.forEach(k => {
+        const steno = k.getAttribute('data-steno');
+        if (neededKeys.includes(steno)) {
+          k.classList.add('suggested');
+        }
+      });
+
+      // Update detail step
+      detailStep.innerHTML = `
+        To write <strong>"${item.word}"</strong> (${item.chord}): Roll keys 
+        <span class="badge-key">${item.qwerty}</span> then tap <span class="badge-key">SPACE</span>
+      `;
+    }
+
+    // Tab Navigation
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        renderDeck(tab.getAttribute('data-deck'), searchInput.value);
+      });
+    });
+
+    // Search Input
+    searchInput.addEventListener('input', (e) => {
+      renderDeck(currentDeck, e.target.value);
+    });
+
+    // Physical Keydown / Keyup Event Listeners
+    window.addEventListener('keydown', (e) => {
+      const key = e.key.toLowerCase();
+      
+      // Don't intercept typing when searching in input box
+      if (document.activeElement === searchInput && key !== 'escape') {
+        return;
+      }
+
+      if (key === 'escape') {
+        searchInput.blur();
+        chordBuffer = [];
+        hudBuffer.textContent = '—';
+        hudOutput.textContent = '—';
+        keyElements.forEach(k => k.classList.remove('active'));
+        return;
+      }
+
+      e.preventDefault();
+
+      // Find virtual key element
+      const target = document.querySelector(`.key[data-key="${key}"]`);
+      if (target) {
+        target.classList.add('active');
+      }
+
+      if (key === ' ') {
+        // Spacebar is the Arpeggiate commit trigger!
+        if (chordBuffer.length > 0) {
+          const chordStr = chordBuffer.join('+');
+          hudOutput.textContent = `Committed [${chordStr}]`;
+          
+          // Match in decks
+          let found = false;
+          for (let d in DECKS) {
+            for (let item of DECKS[d]) {
+              const itemKeys = item.qwerty.replace(/\s+/g, '').split('+');
+              const sortedA = [...itemKeys].sort().join('+');
+              const sortedB = [...chordBuffer].sort().join('+');
+              if (sortedA === sortedB) {
+                hudOutput.textContent = `✓ "${item.word}"`;
+                found = true;
+                break;
+              }
+            }
+            if (found) break;
+          }
+
+          chordBuffer = [];
+          hudBuffer.textContent = '—';
+        }
+      } else {
+        if (!chordBuffer.includes(key.toUpperCase())) {
+          chordBuffer.push(key.toUpperCase());
+          hudBuffer.textContent = chordBuffer.join(' + ');
+        }
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (document.activeElement === searchInput) return;
+      const key = e.key.toLowerCase();
+      const target = document.querySelector(`.key[data-key="${key}"]`);
+      if (target) {
+        target.classList.remove('active');
+      }
+    });
+
+    // Initial render
+    renderDeck('top100');
+  </script>
+</body>
+</html>
+

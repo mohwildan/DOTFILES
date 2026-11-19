@@ -54,7 +54,7 @@ cd() {
 }
 
 # JBR & Android SDK Environment
-export JAVA_HOME=$(/usr/libexec/java_home -v 11 2>/dev/null || /usr/libexec/java_home 2>/dev/null)
+export JAVA_HOME=$(/usr/libexec/java_home -v 17 2>/dev/null || /usr/libexec/java_home 2>/dev/null)
 export PATH="$JAVA_HOME/bin:$PATH"
 export ANDROID_HOME="/Volumes/DevSSD/Android/sdk"
 export ANDROID_SDK_ROOT="/Volumes/DevSSD/Android/sdk"
@@ -62,6 +62,13 @@ export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/t
 export CPPFLAGS="-I/opt/homebrew/opt/openjdk/include"
 export GRADLE_USER_HOME="/Volumes/DevSSD/Android/gradle/.gradle"
 export KONAN_DATA_DIR="/Volumes/DevSSD/Android/konan"
+
+# DevSSD Developer Caches & Model Stores
+if [ -d "/Volumes/DevSSD" ]; then
+    export NUGET_PACKAGES="/Volumes/DevSSD/.nuget/packages"
+    export UV_CACHE_DIR="/Volumes/DevSSD/.cache/uv"
+    export OLLAMA_MODELS="/Volumes/DevSSD/Ollama/Model"
+fi
 
 # Added by Antigravity
 export PATH="/Users/mac/.antigravity/antigravity/bin:$PATH"
@@ -101,3 +108,7 @@ fi
 
 # Added by Antigravity CLI installer
 export PATH="/Users/mac/.local/bin:$PATH"
+
+export OPENAI_API_KEY=sk-f2d6aae50cd74684b618f16fc048f3c1
+export OPENAI_BASE_URL=https://api.deepseek.com
+export SCREENPIPE_LOCAL_API_KEY=sp-669c616c
