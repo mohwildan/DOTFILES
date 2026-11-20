@@ -26,7 +26,7 @@ if [ -n "$FOCUSED_WS" ]; then
 fi
 
 # 2. Position the floating window at the desired screen corner
-osascript <<APPLESCRIPT
+osascript <<APPLESCRIPT 2>/dev/null
 tell application "Finder"
     set screenBounds to bounds of window of desktop
     set screenW to item 3 of screenBounds
