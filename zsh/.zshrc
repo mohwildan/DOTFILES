@@ -112,3 +112,4 @@ export PATH="/Users/mac/.local/bin:$PATH"
 export OPENAI_API_KEY=sk-f2d6aae50cd74684b618f16fc048f3c1
 export OPENAI_BASE_URL=https://api.deepseek.com
 export SCREENPIPE_LOCAL_API_KEY=sp-669c616c
+export AUTH_TOKEN=glpat-bkDRaAG0CgSiIm1qTSqN8286MQp1OjlnCA.01.0y1mwmbpj
